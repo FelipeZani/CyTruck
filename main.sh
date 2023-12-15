@@ -17,6 +17,7 @@ checkDir() #function which will verify if the directory indicated by the user ex
    
 }
 
+
 checkEOut() #verify if the executable exists
 {
 
@@ -37,7 +38,7 @@ checkEOut() #verify if the executable exists
     then
         `make`
 		return_make=$?
-		if [ $return_make -ne 0 ]#verification of the return of make command
+		if [ $return_make -ne 0 ] #verification of the return of make command
 		then
 			echo "Program failled to build an executable"
 			exit 1
@@ -73,6 +74,21 @@ taskDuration()#this function will receive an initial time passed by argument and
 if [ $# -eq 0 ]; then #check if any parameter was passed
     echo "No arguments provided"
     exit 1
+fi
+
+# remove the folder temp
+rm -rf temp
+
+#check if the folder temp exist and if it doesn't, create it
+if [ ! -d temp ];
+then
+	mkdir temp
+fi
+
+#check if the folder images exist and if it doesn't, create it
+if [ ! -d images ]; 
+then
+	mkdir images
 fi
 
 all_args=$*
