@@ -61,7 +61,8 @@ getTime() #this function gets the local time of the computer and transforms it i
 
 }
 
-taskDuration()#this function will receive an initial time passed by argument and computate the duration of execution of a certain task
+taskDuration() #this function will receive an initial time passed by argument
+#and computate the duration of execution of a certain task
 {
 
 	init_time=$1
@@ -71,15 +72,30 @@ taskDuration()#this function will receive an initial time passed by argument and
 	echo $dur_exec
 }
 
+d1Flag() #this function will display the top 10 drivers who have highest number
+ #of trips
+{
+    #count the occurences(of trips) of each driver and redirect it to the temp file
+	awk -F ';' '{count[$6]++} END {for (i in count) print i ";" count[i]}' data.csv > temp.csv
+    
+    #concatenate the two colums inside and redirects it to temp2
+    awk -F ';' '{ print $1 " " $2 }' temp.csv > temp2.csv
+    
+    #sort according the third field and in the decreasing order
+    sort -k3,3 -rn temp2.csv | head -n10
+    
+    mv temp.csv temp2.csv ../temp #clean the folder
+}
+
 if [ $# -eq 0 ]; then #check if any parameter was passed
     echo "No arguments provided"
     exit 1
 fi
 
-# remove the folder temp
+# remove the temp folder
 rm -rf temp
 
-#check if the folder temp exist and if it doesn't, create it
+#check if the temp folder exists, otherwise creates it
 if [ ! -d temp ];
 then
 	mkdir temp
@@ -99,11 +115,17 @@ checkEOut
 
 for i in $all_args #print the help list
 do
-    if [ "$i" = "-h" ]
-    then
-        echo "future: command list"
-        exit 0
-    fi
+	case $i in
+	"-d1") cd data
+	
+	 (d1Flag)
+	 
+	 cd ..;;
+	
+    "-h") echo "future: command list"
+    
+        exit 0;;
+    esac
 done
 
 
