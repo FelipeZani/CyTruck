@@ -75,13 +75,8 @@ taskDuration() #this function will receive an initial time passed by argument
 d1Flag() #this function will display the top 10 drivers who have highest number
  #of trips
 {
-    #count the occurences(of trips) of each driver and redirect it to the temp file
-	awk -F ';' '{count[$6]++} END {for (i in count) print i ";" count[i]}' data.csv > temp.csv
-    
-    #concatenate the two colums inside and redirects it to temp2
-    awk -F ';' '{ print $1 " " $2 }' temp.csv > temp2.csv
-    
-    #sort according the third field and in the decreasing order
+    grep ";1;" data.csv>temp.csv
+    awk -F ';' '{ count[$6]++ } END { for (i in count) print i" " count[i] }' temp.csv > temp2.csv
     sort -k3,3 -rn temp2.csv | head -n10
     
     mv temp.csv temp2.csv ../temp #clean the folder
@@ -116,15 +111,19 @@ checkEOut
 for i in $all_args #print the help list
 do
 	case $i in
-	"-d1") cd data
-	
-	 (d1Flag)
-	 
-	 cd ..;;
-	
-    "-h") echo "future: command list"
+	"-h") echo "future: command list"
     
         exit 0;;
+	"-d1") cd data
+	
+    strt_time=$(getTime)
+    
+    d1Flag
+    
+    echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+    
+    cd ..;;
+	 
     esac
 done
 
