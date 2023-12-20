@@ -13,7 +13,6 @@ checkDir() #function which will verify if the directory indicated by the user ex
 	if [ ! -f "$csv_file/data.csv" ]
     then
         echo "File not found"
-        exit 1
     fi
    
 }
@@ -76,11 +75,19 @@ taskDuration() #this function will receive an initial time passed by argument
 d1Flag() #this function will display the top 10 drivers who have highest number
  #of trips
 {
-    grep ";1;" data.csv>temp.csv
-    awk -F ';' '{ count[$6]++ } END { for (i in count) print i" " count[i] }' temp.csv > temp2.csv
-    sort -k3,3 -rn temp2.csv | head -n10
+    grep ";1;" data.csv>temp.csv # this line take all the first step of all trips and send them to temp.csv
+    awk -F ';' '{ count[$6]++ } END { for (i in count) print i" " count[i] }' temp.csv > temp2.csv #  this line counts the number of occurrences of each unique value in the sixth column of the CSV file temp.csv, then writes these counts to a new file called temp2.csv
+    sort -k3,3 -rn temp2.csv | head -n10 # this line print ce ten drivers with the highest number of trips of the temp.csv file
     
     mv temp.csv temp2.csv ../temp #clean the folder
+}
+
+d2Flag() # this function displays the 10 drivers with the longest rides
+{
+    awk -F ';' '{sum[$6]+=$5} END {for (i in sum) print i" "sum[i]}' data.csv > temp.csv #this line sum up the kilometers for every drivers ans sand them to temp.csv
+    sort -k3,3 -rn temp.csv | head -n10 # this line print ce ten drivers with the longest rides of the temp.csv file
+    
+    mv temp.csv ../temp #clean the folder
 }
 
 if [ $# -eq 0 ]; then #check if any parameter was passed
@@ -120,6 +127,15 @@ do
     strt_time=$(getTime)
     
     d1Flag
+    
+        echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+    
+            exit 0;;
+	"-d2") cd data
+    
+    strt_time=$(getTime)
+    
+    d2Flag
     
     echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
     
