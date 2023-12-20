@@ -4,7 +4,7 @@ checkDir() #function which will verify if the directory indicated by the user ex
 {
 
     if [ ! -d $1 ]; then
-        echo "Directory not found"
+        echo "Data directory not found"
         exit 1
     fi
 	
@@ -12,7 +12,8 @@ checkDir() #function which will verify if the directory indicated by the user ex
     
 	if [ ! -f "$csv_file/data.csv" ]
     then
-        echo "File not found"
+        echo "Data file not found"
+	exit 1
     fi
    
 }
@@ -95,13 +96,12 @@ if [ $# -eq 0 ]; then #check if any parameter was passed
     exit 1
 fi
 
-# remove the temp folder
-rm -rf temp
-
-#check if the temp folder exists, otherwise creates it
+#check if the temp folder exists, if so empty it, otherwise create it
 if [ ! -d temp ];
 then
 	mkdir temp
+else
+    find temp -mindepth 1 -delete
 fi
 
 #check if the folder images exist and if it doesn't, create it
