@@ -91,6 +91,11 @@ d2Flag() # this function displays the 10 drivers with the longest rides
     mv temp.csv ../temp #clean the folder
 }
 
+fFlag()
+{
+    echo "work on progress :3"
+}
+    
 
 
 
@@ -125,31 +130,51 @@ for i in $all_args #print the help list
 do
 	case $i in
 
-	"-h") echo "future: command list"
-    		exit 0;;
+	"-h") 
+    
+        echo "future: command list"
+
+    	exit 0;;
 
       
-	"-d1") cd data
-	
-    		strt_time=$(getTime)
+	"-d1") 
     
-    		d1Flag
-    
-        	echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+        cd data
 	
-        	exit 0;;
+    	strt_time=$(getTime)
+    
+    	d1Flag
+
+    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+    	exit 0;;
 
      
-	"-d2") cd data
+	"-d2") 
     
-    		strt_time=$(getTime)
+        cd data
     
-    		d2Flag
+    	strt_time=$(getTime)
     
-    		echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+		d2Flag
     
-    		cd ..;;
-	 
+    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;
+
+
+    "-t") 
+
+        cd data
+
+        strt_time=$(getTime)
+    
+		fFlag
+    
+    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;
+
     esac
 done
 
