@@ -13,6 +13,7 @@ checkDir() #function which will verify if the directory indicated by the user ex
 	if [ ! -f "$csv_file/data.csv" ]
     then
         echo "File not found"
+        exit 1
     fi
    
 }
