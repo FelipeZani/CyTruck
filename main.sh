@@ -91,6 +91,11 @@ d2Flag() # this function displays the 10 drivers with the longest rides
     mv temp.csv ../temp #clean the folder
 }
 
+
+
+
+# Main
+
 if [ $# -eq 0 ]; then #check if any parameter was passed
     echo "No arguments provided"
     exit 1
@@ -119,27 +124,31 @@ checkEOut
 for i in $all_args #print the help list
 do
 	case $i in
+
 	"-h") echo "future: command list"
-    
-        exit 0;;
+    		exit 0;;
+
+      
 	"-d1") cd data
 	
-    strt_time=$(getTime)
+    		strt_time=$(getTime)
     
-    d1Flag
+    		d1Flag
     
-        echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
-    
-            exit 0;;
+        	echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+	
+        	exit 0;;
+
+     
 	"-d2") cd data
     
-    strt_time=$(getTime)
+    		strt_time=$(getTime)
     
-    d2Flag
+    		d2Flag
     
-    echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+    		echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
     
-    cd ..;;
+    		cd ..;;
 	 
     esac
 done
