@@ -173,7 +173,7 @@ do
 
         strt_time=$(getTime)
     
-		fFlag
+		tFlag
     
     	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
 
