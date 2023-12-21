@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 checkDir() #function which will verify if the directory indicated by the user exists
 {
 
@@ -47,13 +48,16 @@ checkEOut() #verify if the executable exists
     fi
 	
     cd ..
-	
 }
+
 
 getTime() #this function gets the local time of the computer and transforms it in seconds
 {
 
-	tot_sec=$(date +%s)
+	hour=`date +%H`
+	minutes=`date +%M`
+	secondes=`date +%S`
+	tot_sec=$((${hour}*3600 + ${minutes}*60 + ${secondes}))
 	
 	echo "$tot_sec"
 
@@ -62,49 +66,46 @@ getTime() #this function gets the local time of the computer and transforms it i
 taskDuration() #this function will receive an initial time passed by argument
 #and computate the duration of execution of a certain task
 {
-
 	init_time=$1
-	end_time=$(date +%s)
+	end_time=$(getTime)
 	dur_exec=$((${end_time} - ${init_time}))
 	
 	echo $dur_exec
 }
 
-d1Flag() #this function will display the top 10 drivers who have highest number
- #of trips
+
+
+d1Flag() #this function will display the top 10 drivers who have highest number of trips
 {
-    grep ";1;" data.csv>temp.csv # this line take all the first step of all trips and send them to temp.csv
-    awk -F ';' '{ count[$6]++ } END { for (i in count) print i" " count[i] }' temp.csv > temp2.csv #  this line counts the number of occurrences of each unique value in the sixth column of the CSV file temp.csv, then writes these counts to a new file called temp2.csv
-    sort -k3,3 -rn temp2.csv | head -n10 # this line print ce ten drivers with the highest number of trips of the temp.csv file
-    
-    mv temp.csv temp2.csv ../temp #clean the folder
+    grep '^[^;]*;1;' data/data.csv | 
+    awk -v OFS=';' -F';' '{ journey_count[$6]++ } END {for (driver in journey_count) print driver, journey_count[driver] } ' | 
+    sort -t';' -nrk2,2 | 
+    head -n10 > temp/temp_d1flag.csv  
 }
 
 d2Flag() # this function displays the 10 drivers with the longest rides
 {
-    awk -F ';' '{sum[$6]+=$5} END {for (i in sum) print i" "sum[i]}' data.csv > temp.csv #this line sum up the kilometers for every drivers ans sand them to temp.csv
-    sort -k3,3 -rn temp.csv | head -n10 # this line print ce ten drivers with the longest rides of the temp.csv file
-    
-    mv temp.csv ../temp #clean the folder
+    cut -d';' -f5,6 data/data.csv |
+    awk -v OFS=';' -F';'  'NR>1 {journey_lengths_sum[$2]+=$1} END {for (driver in journey_lengths_sum) print driver, journey_lengths_sum[driver]}' |
+    sort -t';' -nrk2,2 |
+    head -n10 > temp/temp_d2flag.csv
 }
 
+fFlag()
+{
+    echo caca
+}
+    
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
 {
-    awk -F';' '{ 
-        sum[$1]+= $5;
-      }
-      END{
-        for (driver in sum){
-          print driver , sum[driver];
-        }
-      }
-    ' data.csv | sort -t" " -k2nr | head -n10 > templFlag.csv
-    cat templFlag.csv
-    mv templFlag.csv ../temp
-    #the block of code above will compute the distance of each trip, storing them in a array and then increasing the distance
-    # if a similar route ID is found and finally the code will display each driver in the trip and the distance from the array
-    
+    cut -d';' -f1,5 data/data.csv |
+    awk -v OFS=';' -F';' 'NR>1 { route_lengths_sum[$1]+= $2;} END {for (route_id in route_lengths_sum) {print route_id, route_lengths_sum[route_id];}}' data/data.csv |
+    sort -t";" -k2nr |
+    head -n10 > temp/temp_lflag.csv
 }
+
+
+
 
 
 
@@ -139,41 +140,55 @@ for i in $all_args #print the help list
 do
 	case $i in
 
-	"-h") echo "future: command list"
-    		exit 0;;
+	"-h") 
+    
+        echo "future: command list"
+
+    	exit 0;;
 
       
-	"-d1") cd data
+	"-d1")
 	
-    		strt_time=$(getTime)
+    	strt_time=$(getTime)
     
-    		d1Flag
-    
-        	echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
-	
-        	exit 0;;
+    	d1Flag
+
+    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+    	exit 0;;
 
      
-	"-d2") cd data
+	"-d2") 
     
-    		strt_time=$(getTime)
+    	strt_time=$(getTime)
     
-    		d2Flag
+		d2Flag
     
-    		echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;
+
+
+    "-t") 
+
+        strt_time=$(getTime)
     
-    		cd ..;;
-    "-l") cd data
-	
-            strt_time=$(getTime)
+		fFlag
+    
+    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;
+
+
+    "-l")
+
+        strt_time=$(getTime)
 			
-            lFlag
+        lFlag
 			
-	        echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+	    echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;
+
     esac
 done
-
-
-
-
-
