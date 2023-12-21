@@ -91,7 +91,7 @@ d2Flag() # this function displays the 10 drivers with the longest rides
     head -n10 > temp/temp_d2flag.csv
 }
 
-fFlag()
+tFlag()
 {
     echo caca
 }
