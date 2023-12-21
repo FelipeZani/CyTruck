@@ -99,7 +99,7 @@ fFlag()
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
 {
     cut -d';' -f1,5 data/data.csv |
-    awk -v OFS=';' -F';' 'NR>1 { route_lengths_sum[$1]+= $2;} END {for (route_id in route_lengths_sum) {print route_id, route_lengths_sum[route_id];}}' data/data.csv |
+    awk -v OFS=';' -F';' 'NR>1 { route_lengths_sum[$1]+= $2;} END {for (route_id in route_lengths_sum) {print route_id, route_lengths_sum[route_id];}}' |
     sort -t";" -k2nr |
     head -n10 > temp/temp_lflag.csv
 }
