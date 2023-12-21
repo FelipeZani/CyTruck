@@ -53,10 +53,7 @@ checkEOut() #verify if the executable exists
 getTime() #this function gets the local time of the computer and transforms it in seconds
 {
 
-	hour=`date +%H`
-	minutes=`date +%M`
-	secondes=`date +%S`
-	tot_sec=$((${hour}*3600 + ${minutes}*60 + ${secondes}))
+	tot_sec=$(date +%s)
 	
 	echo "$tot_sec"
 
@@ -67,7 +64,7 @@ taskDuration() #this function will receive an initial time passed by argument
 {
 
 	init_time=$1
-	end_time=$(getTime)
+	end_time=$(date +%s)
 	dur_exec=$((${end_time} - ${init_time}))
 	
 	echo $dur_exec
@@ -91,11 +88,23 @@ d2Flag() # this function displays the 10 drivers with the longest rides
     mv temp.csv ../temp #clean the folder
 }
 
-fFlag()
+lFlag() #this function will display the top10 longest trips by Route ID and then the distance
 {
-    echo "work on progress :3"
-}
+    awk -F';' '{ 
+        sum[$1]+= $5;
+      }
+      END{
+        for (driver in sum){
+          print driver , sum[driver];
+        }
+      }
+    ' data.csv | sort -t" " -k2nr | head -n10 > templFlag.csv
+    cat templFlag.csv
+    mv templFlag.csv ../temp
+    #the block of code above will compute the distance of each trip, storing them in a array and then increasing the distance
+    # if a similar route ID is found and finally the code will display each driver in the trip and the distance from the array
     
+}
 
 
 
@@ -130,51 +139,37 @@ for i in $all_args #print the help list
 do
 	case $i in
 
-	"-h") 
-    
-        echo "future: command list"
-
-    	exit 0;;
+	"-h") echo "future: command list"
+    		exit 0;;
 
       
-	"-d1") 
-    
-        cd data
+	"-d1") cd data
 	
-    	strt_time=$(getTime)
+    		strt_time=$(getTime)
     
-    	d1Flag
-
-    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
-
-    	exit 0;;
+    		d1Flag
+    
+        	echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
+	
+        	exit 0;;
 
      
-	"-d2") 
+	"-d2") cd data
     
-        cd data
+    		strt_time=$(getTime)
     
-    	strt_time=$(getTime)
+    		d2Flag
     
-		d2Flag
+    		echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
     
-    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
-
-        exit 0;;
-
-
-    "-t") 
-
-        cd data
-
-        strt_time=$(getTime)
-    
-		fFlag
-    
-    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
-
-        exit 0;;
-
+    		cd ..;;
+    "-l") cd data
+	
+            strt_time=$(getTime)
+			
+            lFlag
+			
+	        echo "Duration of the task's execution: `taskDuration $strt_time`seconds"
     esac
 done
 
