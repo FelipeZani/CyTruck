@@ -77,7 +77,7 @@ taskDuration() #this function will receive an initial time passed by argument
 
 d1Flag() #this function will display the top 10 drivers who have highest number of trips
 {
-    grep '^[^;]*;1;' data/data.csv | 
+    grep '^[^;]*;1;' data/data.csv |
     awk -v OFS=';' -F';' '{ journey_count[$6]++ } END {for (driver in journey_count) print driver, journey_count[driver] } ' | 
     sort -t';' -nrk2,2 | 
     head -n10 > temp/temp_d1flag.csv  
@@ -93,9 +93,12 @@ d2Flag() # this function displays the 10 drivers with the longest rides
 
 tFlag()
 {
-    echo caca
+    cut -d';' -f3,4 data/data.csv |
+    awk -v OFS=';' -F ';' '{ town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town]; }' |
+    sort -t';' -nrk2,2 |
+    head -n10 > temp/temp_d2flag.csv
 }
-    
+
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
 {
     cut -d';' -f1,5 data/data.csv |
