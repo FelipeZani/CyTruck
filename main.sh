@@ -72,14 +72,38 @@ taskDuration() #this function will receive an initial time passed by argument
 
 
 
-d1Flag() #this function will display the top 10 drivers who have highest number of trips
-{
+d1Flag() {
     grep '^[^;]*;1;' data/data.csv |
     awk -v OFS=';' -F';' '{ journey_count[$6]++ } END {for (driver in journey_count) print driver, journey_count[driver] } ' | 
     sort -t';' -nrk2,2 | 
-    head -n10 > temp/temp_d1flag.csv  
-}
+    head -n10 > temp/temp_d1flag.csv
 
+    # Créer le fichier de données pour le graphique
+    awk -F';' '{print $1, $2}' temp/temp_d1flag.csv > temp/donnees_graphique_d1flag.csv
+
+    # Créer le graphique avec Gnuplot et sauvegarder dans le dossier "images"
+    gnuplot << EOF
+    set terminal pngcairo enhanced font "arial,10" size 800,600
+    set output 'images/graphique_d1flag.png'
+
+    set style data histogram
+    set style histogram rowstacked
+    set boxwidth 0.75 relative
+    set style fill solid 0.5
+
+    set yrange [0:*]
+    set ylabel "Noms des conducteurs"
+    set xlabel "Nombre de trajets"
+    set title "Conducteurs avec le plus de trajets"
+
+    set ytics nomirror out
+    set format x "%g"
+
+    plot 'temp/donnees_graphique_d1flag.txt' using 2:1 with boxes title "Nombre de trajets"
+EOF
+
+    echo "Le graphique a été généré : images/graphique_d1flag.png"
+}
 d2Flag() # this function displays the 10 drivers with the longest rides
 {
     cut -d';' -f5,6 data/data.csv |
