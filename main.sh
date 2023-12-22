@@ -79,7 +79,8 @@ d1Flag() {
     head -n10 > temp/temp_d1flag.csv
 
     # Créer le fichier de données pour le graphique
-    awk -F';' '{print $1, $2}' temp/temp_d1flag.csv > temp/donnees_graphique_d1flag.csv
+    awk -F';' '{print $1, $2}' temp/temp_d1flag.csv > temp/donnees_graphique_d1flag.txt
+    #mv temp/donnees_graphique_d1flag.csv temp/donnees_graphique_d1flag.txt
 
     # Créer le graphique avec Gnuplot et sauvegarder dans le dossier "images"
     gnuplot << EOF
