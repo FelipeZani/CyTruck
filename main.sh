@@ -54,11 +54,8 @@ checkEOut() #verify if the executable exists
 getTime() #this function gets the local time of the computer and transforms it in seconds
 {
 
-	hour=`date +%H`
-	minutes=`date +%M`
-	secondes=`date +%S`
-	tot_sec=$((${hour}*3600 + ${minutes}*60 + ${secondes}))
-	
+	tot_sec=$(date +%s)
+
 	echo "$tot_sec"
 
 }
