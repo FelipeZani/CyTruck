@@ -21,15 +21,15 @@ typedef struct Town {
 
 typedef struct Town* pTown;
 
-typedef struct Avl
+typedef struct AVL
 {
     pTown town;
-    struct Avl* ls;
-    struct Avl* rs;
+    struct AVL* ls;
+    struct AVL* rs;
     int eq;
-} Avl;
+} AVL;
 
-typedef struct Avl* pAvl;
+typedef struct AVL* pAVL;
 
 pTown townCreation(char name[], int total, int first_step)
 {
@@ -47,9 +47,9 @@ pTown townCreation(char name[], int total, int first_step)
 	return newTown;
 }
 
-pAvl avlcreation(pTown town)
+pAVL AVLcreation(pTown town)
 {
-    pAvl node = malloc(sizeof(Avl));
+    pAVL node = malloc(sizeof(AVL));
     node->town = town;
     node->ls = NULL;
     node->rs = NULL;
@@ -58,9 +58,9 @@ pAvl avlcreation(pTown town)
     return node;
 }
 
-pAvl leftRotation(pAvl a)
+pAVL leftRotation(pAVL a)
 {
-    pAvl pivot = a->rs;
+    pAVL pivot = a->rs;
     a->rs = pivot->ls;
     pivot->ls = a;
 
@@ -74,9 +74,9 @@ pAvl leftRotation(pAvl a)
     return a;
 }
 
-pAvl rightRotation(pAvl a)
+pAVL rightRotation(pAVL a)
 {
-    pAvl pivot = a->ls;
+    pAVL pivot = a->ls;
     a->ls = pivot->rs;
     pivot->rs = a;
 
@@ -90,19 +90,19 @@ pAvl rightRotation(pAvl a)
     return a;
 }
 
-pAvl doubleleftRotation(pAvl a)
+pAVL doubleleftRotation(pAVL a)
 {
     a->rs = rightRotation(a->rs);
     return leftRotation(a);
 }
 
-pAvl doubleRotationDroite(pAvl a)
+pAVL doubleRotationDroite(pAVL a)
 {
     a->ls = leftRotation(a->ls);
     return rightRotation(a);
 }
 
-pAvl balanceAvl(pAvl a)
+pAVL balanceAVL(pAVL a)
 {
     if(a->eq >=2 )
     {
@@ -129,21 +129,21 @@ pAvl balanceAvl(pAvl a)
     return a;
 }
 
-pAvl avlInsertionByTotal(pAvl a, pTown town, int* ph)
+pAVL AVLInsertionByTotal(pAVL a, pTown town, int* ph)
 {
     if(a == NULL)
     {
         *ph = 1;
-        return avlcreation(town);
+        return AVLcreation(town);
     }
     else if(town->total < a->town->total)
     {
-        a->ls = avlInsertionByTotal(a->ls, town, ph);
+        a->ls = AVLInsertionByTotal(a->ls, town, ph);
         *ph = -(*ph);
     }
     else if(town->total > a->town->total)
     {
-        a->rs = avlInsertionByTotal(a->rs, town, ph);
+        a->rs = AVLInsertionByTotal(a->rs, town, ph);
     }
     else
     {
@@ -154,7 +154,7 @@ pAvl avlInsertionByTotal(pAvl a, pTown town, int* ph)
     if (*ph != 0 )
     {
         a->eq += *ph;
-        a = balanceAvl(a);
+        a = balanceAVL(a);
         if(a->eq == 0)
         {
             *ph = 0;
@@ -167,21 +167,21 @@ pAvl avlInsertionByTotal(pAvl a, pTown town, int* ph)
     return a;
 }
 
-pAvl avlInsertionByName(pAvl a, pTown town, int* ph)
+pAVL AVLInsertionByName(pAVL a, pTown town, int* ph)
 {
     if(a == NULL)
     {
         *ph = 1;
-        return avlcreation(town);
+        return AVLcreation(town);
     }
     else if(strcmp(town->name, a->town->name) > 0)
     {
-        a->ls = avlInsertionByName(a->ls, town, ph);
+        a->ls = AVLInsertionByName(a->ls, town, ph);
         *ph = -(*ph);
     }
     else if(strcmp(town->name, a->town->name) < 0)
     {
-        a->rs = avlInsertionByName(a->rs, town, ph);
+        a->rs = AVLInsertionByName(a->rs, town, ph);
     }
     else
     {
@@ -192,7 +192,7 @@ pAvl avlInsertionByName(pAvl a, pTown town, int* ph)
     if (*ph != 0 )
     {
         a->eq += *ph;
-        a = balanceAvl(a);
+        a = balanceAVL(a);
         if(a->eq == 0)
         {
             *ph = 0;
@@ -205,34 +205,45 @@ pAvl avlInsertionByName(pAvl a, pTown town, int* ph)
     return a;
 }
 
-void RNL_printf(pAvl avl, int* pCount)
+void RNL_printf(pAVL AVL, int* pCount)
 {
-    if(avl != NULL && *pCount > 0)
+    if(AVL != NULL && *pCount > 0)
     {
-        RNL_printf(avl->rs, pCount);
-        if(*pCount > 0) {printf("%s %d %d\n", avl->town->name, avl->town->total, avl->town->first_step); (*pCount)--;}
-        RNL_printf(avl->ls, pCount);
+        RNL_printf(AVL->rs, pCount);
+        if(*pCount > 0) {printf("%s %d %d\n", AVL->town->name, AVL->town->total, AVL->town->first_step); (*pCount)--;}
+        RNL_printf(AVL->ls, pCount);
     }
 }
 
-void RNL_fprintf(pAvl avl, FILE* outputFile)
+void RNL_fprintf(pAVL AVL, FILE* outputFile)
 {
-    if(avl != NULL)
+    if(AVL != NULL)
     {
-        RNL_fprintf(avl->rs, outputFile);
-        fprintf(outputFile, "%s;%d;%d\n", avl->town->name, avl->town->total, avl->town->first_step);
-        RNL_fprintf(avl->ls, outputFile);
+        RNL_fprintf(AVL->rs, outputFile);
+        fprintf(outputFile, "%s;%d;%d\n", AVL->town->name, AVL->town->total, AVL->town->first_step);
+        RNL_fprintf(AVL->ls, outputFile);
     }
 }
 
-void RNL_avlInsertionByName(pAvl source_avl, pAvl* destination_avl, int *ph, int* pCount)
+void RNL_AVLInsertionByName(pAVL source_AVL, pAVL* destination_AVL, int *ph, int* pCount)
 {
-    if(source_avl != NULL && *pCount > 0)
+    if(source_AVL != NULL && *pCount > 0)
     {
-        RNL_avlInsertionByName(source_avl->rs, destination_avl, ph, pCount);
-        if(*pCount > 0) {*destination_avl = avlInsertionByName(*destination_avl, source_avl->town, ph);  (*pCount)--;}
-        RNL_avlInsertionByName(source_avl->ls, destination_avl, ph, pCount);
+        RNL_AVLInsertionByName(source_AVL->rs, destination_AVL, ph, pCount);
+        if(*pCount > 0) 
+        {
+                *destination_AVL = AVLInsertionByName(*destination_AVL, townCreation(source_AVL->town->name, source_AVL->town->total, source_AVL->town->first_step), ph);
+                (*pCount)--;
+        }
+        RNL_AVLInsertionByName(source_AVL->ls, destination_AVL, ph, pCount);
     }
+}
+
+void freeAVL(pAVL AVL)
+{
+    if(AVL->ls != NULL) {freeAVL(AVL->ls);}
+    if(AVL->rs != NULL) {freeAVL(AVL->rs);}
+    free(AVL);
 }
 
 int main(int argc, char *argv[])
@@ -245,7 +256,7 @@ int main(int argc, char *argv[])
     }    
 
     
-    pAvl avlByTotal = NULL;
+    pAVL AVLByTotal = NULL;
     int h1 = 0;
 
 
@@ -263,7 +274,7 @@ int main(int argc, char *argv[])
 
     while(fscanf(dataFile, "%[^;];%d;%d\n", nameBuffer, &totalBuffer, &firstStepBuffer) == 3)
     {
-        avlByTotal = avlInsertionByTotal(avlByTotal, townCreation(nameBuffer, totalBuffer, firstStepBuffer), &h1);
+        AVLByTotal = AVLInsertionByTotal(AVLByTotal, townCreation(nameBuffer, totalBuffer, firstStepBuffer), &h1);
     }
     fclose(dataFile);
 
@@ -272,20 +283,22 @@ int main(int argc, char *argv[])
 
 
     int count = N_MOST_VISITED_TOWNS, h2 = 0;
-    pAvl avlByName = NULL;
+    pAVL AVLByName = NULL;
     
-    RNL_avlInsertionByName(avlByTotal, &avlByName, &h2, &count);
+    RNL_AVLInsertionByName(AVLByTotal, &AVLByName, &h2, &count);
     
     count = N_MOST_VISITED_TOWNS;
-    //RNL_printf(avlByName, &count);
+    //RNL_printf(AVLByName, &count);
     
 
     FILE* outputFile = fopen(OUTPUT_FILE_PATH, "w");
 
-    RNL_fprintf(avlByName, outputFile);
+    RNL_fprintf(AVLByName, outputFile);
 
     fclose(outputFile);
 
+    freeAVL(AVLByTotal);
+    freeAVL(AVLByName);
 
     return 0;
 }
