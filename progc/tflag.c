@@ -285,5 +285,8 @@ int main(int argc, char *argv[])
     RNL_fprintf(avlByName, outputFile);
 
     fclose(outputFile);
+
+
+    return 0;
 }
 
