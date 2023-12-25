@@ -4,7 +4,7 @@
 
 #define N_MOST_VISITED_TOWNS 10
 #define DATA_FILE_PATH argv[1]
-#define OUTPUT_PATH "../temp/temp_tflag_2.csv"
+#define OUTPUT_FILE_PATH argv[2]
 
 #define MIN2(i, j) (((i) < (j)) ? (i) : (j))
 #define MAX2(i, j) (((i) > (j)) ? (i) : (j))
@@ -238,9 +238,9 @@ void RNL_avlInsertionByName(pAvl source_avl, pAvl* destination_avl, int *ph, int
 int main(int argc, char *argv[])
 {
 
-    if (argc != 2) 
+    if (argc != 3) 
     {
-        fprintf(stderr, "Usage: %s <data_file.csv>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <data_file.csv> <output_file.csv>\n", argv[0]);
         return 1;
     }    
 
@@ -277,10 +277,10 @@ int main(int argc, char *argv[])
     RNL_avlInsertionByName(avlByTotal, &avlByName, &h2, &count);
     
     count = N_MOST_VISITED_TOWNS;
-    RNL_printf(avlByName, &count);
+    //RNL_printf(avlByName, &count);
     
 
-    FILE* outputFile = fopen(OUTPUT_PATH, "w");
+    FILE* outputFile = fopen(OUTPUT_FILE_PATH, "w");
 
     RNL_fprintf(avlByName, outputFile);
 

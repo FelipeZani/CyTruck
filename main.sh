@@ -92,6 +92,10 @@ tFlag()
 {
     cut -d';' -f3,4 data/data.csv |
     awk -v OFS=';' -F ';' 'NR>1 {town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town];}' > temp/temp_tflag_1.csv
+
+    cd progc
+    make -s compile 
+    ./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
 }
 
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
