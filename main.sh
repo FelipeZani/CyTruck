@@ -91,7 +91,7 @@ d2Flag() # this function displays the 10 drivers with the longest rides
 tFlag()
 {
     cut -d';' -f3,4 data/data.csv |
-    awk -v OFS=';' -F ';' '{ town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town]; }' > temp/temp_d2flag.csv
+    awk -v OFS=';' -F ';' '{ town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town]; }' > temp/temp_tflag.csv
 }
 
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
