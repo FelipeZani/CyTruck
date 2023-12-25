@@ -1,2 +1,2 @@
 all:
-	gcc -o main main.c
+	gcc tflag.c -o tflag
