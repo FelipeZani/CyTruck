@@ -243,6 +243,7 @@ void freeAVL(pAVL AVL)
 {
     if(AVL->ls != NULL) {freeAVL(AVL->ls);}
     if(AVL->rs != NULL) {freeAVL(AVL->rs);}
+    free(AVL->town);
     free(AVL);
 }
 
