@@ -20,37 +20,6 @@ checkDir() #function which will verify if the directory indicated by the user ex
 }
 
 
-checkEOut() #verify if the executable exists
-{
-
-    cur_dir=`dirname pwd`/progc
-    E_out=0 
-	
-    cd $cur_dir
-    
-    for entry in * #search for an executable inside the progc folder
-    do
-        if [ -x $entry  ]
-        then
-            E_out=1
-        fi
-    done
-	
-    if [ $E_out -eq 0 ] 
-    then
-        `make`
-		return_make=$?
-		if [ $return_make -ne 0 ] #verification of the return of make command
-		then
-			echo "Program failled to build an executable"
-			exit 1
-		fi
-    fi
-	
-    cd ..
-}
-
-
 getTime() #this function gets the local time of the computer and transforms it in seconds
 {
 
@@ -106,6 +75,20 @@ lFlag() #this function will display the top10 longest trips by Route ID and then
     head -n10 > temp/temp_lflag.csv
 }
 
+sFlag () #this function will create a .csv file with longest and shortest distance of a trip as well as its average for each trip (Route ID)  
+{
+	cd progc
+	$(make buildSflag)
+	return_make=$?
+	if [ $return_make -ne 0 ]
+	then
+        echo "Program failled to build an executable"
+		exit 1
+    fi
+	./sflag #execute the program which will computate the max and min distances and the average
+	cd ../temp
+	sort -t";" -k5,5 -rn sflag_data.csv > sflag_data2graphic.csv
+}
 
 
 
@@ -136,7 +119,7 @@ all_args=$*
 input_dir=$1
 
 checkDir $input_dir
-checkEOut 
+
 
 for i in $all_args #print the help list
 do
@@ -191,6 +174,15 @@ do
 	    echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
 
         exit 0;;
+    "-s")
+        strt_time=$(getTime)
+
+        sFlag
+
+        echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;		
+
 
     esac
 done
