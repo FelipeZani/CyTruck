@@ -20,37 +20,6 @@ checkDir() #function which will verify if the directory indicated by the user ex
 }
 
 
-checkEOut() #verify if the executable exists
-{
-
-    cur_dir=`dirname pwd`/progc
-    E_out=0 
-	
-    cd $cur_dir
-    
-    for entry in * #search for an executable inside the progc folder
-    do
-        if [ -x $entry  ]
-        then
-            E_out=1
-        fi
-    done
-	
-    if [ $E_out -eq 0 ] 
-    then
-        `make`
-		return_make=$?
-		if [ $return_make -ne 0 ] #verification of the return of make command
-		then
-			echo "Program failled to build an executable"
-			exit 1
-		fi
-    fi
-	
-    cd ..
-}
-
-
 getTime() #this function gets the local time of the computer and transforms it in seconds
 {
 
@@ -77,34 +46,27 @@ d1Flag() {
     awk -v OFS=';' -F';' '{ journey_count[$6]++ } END {for (driver in journey_count) print driver, journey_count[driver] } ' | 
     sort -t';' -nrk2,2 | 
     head -n10 > temp/temp_d1flag.csv
+    
+    # Create histogram data file
+    awk -v OFS=';' -F';' '{print $2, $1}' temp/temp_d1flag.csv > temp/histogram_data.csv
 
-    # Créer le fichier de données pour le graphique
-    awk -F';' '{print $1, $2}' temp/temp_d1flag.csv > temp/donnees_graphique_d1flag.txt
-    #mv temp/donnees_graphique_d1flag.csv temp/donnees_graphique_d1flag.txt
-
-    # Créer le graphique avec Gnuplot et sauvegarder dans le dossier "images"
-    gnuplot << EOF
-    set terminal pngcairo enhanced font "arial,10" size 800,600
-    set output 'images/graphique_d1flag.png'
-
-    set style data histogram
-    set style histogram rowstacked
-    set boxwidth 0.75 relative
-    set style fill solid 0.5
-
-    set yrange [0:*]
-    set ylabel "Noms des conducteurs"
-    set xlabel "Nombre de trajets"
-    set title "Conducteurs avec le plus de trajets"
-
-    set ytics nomirror out
-    set format x "%g"
-
-    plot 'temp/donnees_graphique_d1flag.txt' using 2:1 with boxes title "Nombre de trajets"
+    # Generate horizontal histogram using gnuplot
+    gnuplot <<-EOF
+        set terminal png size 1500,600
+        set output 'images/histogram_d1.png'
+        set title "Top 10 Drivers with Highest Number of Trips"
+        set xlabel "Number of Trips"
+        set ylabel "Driver Names"
+        set style data histograms
+        set style fill solid border -1
+        set yrange [0:300]
+        set xrange [0:10] reverse
+        set boxwidth 0.8
+        plot 'temp/histogram_data.csv' using 1:xtic(2) notitle
 EOF
-
-    echo "Le graphique a été généré : images/graphique_d1flag.png"
 }
+
+
 d2Flag() # this function displays the 10 drivers with the longest rides
 {
     cut -d';' -f5,6 data/data.csv |
@@ -116,7 +78,11 @@ d2Flag() # this function displays the 10 drivers with the longest rides
 tFlag()
 {
     cut -d';' -f3,4 data/data.csv |
-    awk -v OFS=';' -F ';' '{ town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town]; }' > temp/temp_d2flag.csv
+    awk -v OFS=';' -F ';' 'NR>1 {town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town];}' > temp/temp_tflag_1.csv
+
+    cd progc
+    make -s compile 
+    ./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
 }
 
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
@@ -127,6 +93,20 @@ lFlag() #this function will display the top10 longest trips by Route ID and then
     head -n10 > temp/temp_lflag.csv
 }
 
+sFlag () #this function will create a .csv file with longest and shortest distance of a trip as well as its average for each trip (Route ID)  
+{
+	cd progc
+	$(make buildSflag)
+	return_make=$?
+	if [ $return_make -ne 0 ]
+	then
+        echo "Program failled to build an executable"
+		exit 1
+    fi
+	./sflag #execute the program which will computate the max and min distances and the average
+	cd ../temp
+	sort -t";" -k5,5 -rn sflag_data.csv > sflag_data2graphic.csv
+}
 
 
 
@@ -157,7 +137,7 @@ all_args=$*
 input_dir=$1
 
 checkDir $input_dir
-checkEOut 
+
 
 for i in $all_args #print the help list
 do
@@ -212,6 +192,15 @@ do
 	    echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
 
         exit 0;;
+    "-s")
+        strt_time=$(getTime)
+
+        sFlag
+
+        echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+
+        exit 0;;		
+
 
     esac
 done
