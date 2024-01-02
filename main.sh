@@ -41,13 +41,31 @@ taskDuration() #this function will receive an initial time passed by argument
 
 
 
-d1Flag() #this function will display the top 10 drivers who have highest number of trips
-{
+d1Flag() {
     grep '^[^;]*;1;' data/data.csv |
     awk -v OFS=';' -F';' '{ journey_count[$6]++ } END {for (driver in journey_count) print driver, journey_count[driver] } ' | 
     sort -t';' -nrk2,2 | 
-    head -n10 > temp/temp_d1flag.csv  
+    head -n10 > temp/temp_d1flag.csv
+    
+    # Create histogram data file
+    awk -v OFS=';' -F';' '{print $2, $1}' temp/temp_d1flag.csv > temp/histogram_data.csv
+
+    # Generate horizontal histogram using gnuplot
+    gnuplot <<-EOF
+        set terminal png size 1500,600
+        set output 'images/histogram_d1.png'
+        set title "Top 10 Drivers with Highest Number of Trips"
+        set xlabel "Number of Trips"
+        set ylabel "Driver Names"
+        set style data histograms
+        set style fill solid border -1
+        set yrange [0:300]
+        set xrange [0:10] reverse
+        set boxwidth 0.8
+        plot 'temp/histogram_data.csv' using 1:xtic(2) notitle
+EOF
 }
+
 
 d2Flag() # this function displays the 10 drivers with the longest rides
 {
