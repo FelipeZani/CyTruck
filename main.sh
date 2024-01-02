@@ -73,6 +73,24 @@ d2Flag() # this function displays the 10 drivers with the longest rides
     awk -v OFS=';' -F';'  'NR>1 {journey_lengths_sum[$2]+=$1} END {for (driver in journey_lengths_sum) print driver, journey_lengths_sum[driver]}' |
     sort -t';' -nrk2,2 |
     head -n10 > temp/temp_d2flag.csv
+    
+    # Create histogram data file
+    awk -v OFS=';' -F';' '{print $2, $1}' temp/temp_d2flag.csv > temp/histogram_d2_data.csv
+
+    # Generate horizontal histogram using gnuplot
+    gnuplot <<-EOF
+        set terminal png size 1500,600
+        set output 'images/histogram_d2.png'
+        set title "Top 10 Drivers with Longest Total Distance"
+        set xlabel "Total Distance (units)"
+        set ylabel "Driver Names"
+        set style data histograms
+        set style fill solid border -1
+        set yrange [0:150000]
+        set xrange [0:10] reverse
+        set boxwidth 0.8
+        plot 'temp/histogram_d2_data.csv' using 1:xtic(2) notitle
+EOF
 }
 
 tFlag()
