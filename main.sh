@@ -52,18 +52,26 @@ d1Flag() {
 
     # Generate horizontal histogram using gnuplot
     gnuplot <<-EOF
-        set terminal png size 1500,600
-        set output 'images/histogram_d1.png'
-        set title "Top 10 Drivers with Highest Number of Trips"
-        set xlabel "Number of Trips"
-        set ylabel "Driver Names"
-        set style data histograms
-        set style fill solid border -1
-        set yrange [0:300]
-        set xrange [0:10] reverse
-        set boxwidth 0.8
-        plot 'temp/histogram_data.csv' using 1:xtic(2) notitle
+	set terminal png size 600,1500
+	set output 'images/histogram_d1.png'
+	set label "Top 10 Drivers with Highest Number of Trips" at -1.5,95 rotate by 90 #In this line we had to set the exact coordinate and rotate for the title to be in the right place
+	set ylabel "Number of Trips" offset 64
+	set xlabel "Driver Names"
+	set style data histograms
+	set style fill solid border -1
+	set yrange [0:250]
+	set boxwidth 0.8
+	# In the coming lines we are rotating all the tics to be readable after the final rotate
+    	set xtic rotate 90
+    	set ytic rotate 90 offset 61
+    	set ytic 50
+    
+	plot 'temp/histogram_data.csv' using 1:xtic(2) notitle
+	# xdg -openhistogram_d1.png 
 EOF
+	# Here we rotate the final picture, so it's going to be a horizontal histogram
+    convert -rotate 90 images/histogram_d1.png images/histogram_d1.png
+    
 }
 
 
