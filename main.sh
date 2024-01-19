@@ -87,18 +87,21 @@ d2Flag() # this function displays the 10 drivers with the longest rides
 
     # Generate horizontal histogram using gnuplot
     gnuplot <<-EOF
-        set terminal png size 1500,600
+        set terminal png size 600,1500
         set output 'images/histogram_d2.png'
-        set title "Top 10 Drivers with Longest Total Distance"
-        set xlabel "Total Distance (units)"
-        set ylabel "Driver Names"
+	set label "Top 10 Drivers with Longest Total Distance" at -1.5,58000 rotate by 90
+        set ylabel "Total Distance (km)" offset 64
+        set xlabel "Driver Names" 
         set style data histograms
         set style fill solid border -1
         set yrange [0:150000]
-        set xrange [0:10] reverse
         set boxwidth 0.8
+        set xtic rotate 90
+    	set ytic rotate 90 offset 61
+    	set ytic 30000
         plot 'temp/histogram_d2_data.csv' using 1:xtic(2) notitle
 EOF
+	convert -rotate 90 images/histogram_d2.png images/histogram_d2.png
 }
 
 tFlag()
@@ -109,7 +112,11 @@ tFlag()
     cd progc
     make -s compile 
     ./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
+    
 }
+
+    
+
 
 lFlag() #this function will display the top10 longest trips by Route ID and then the distance
 {
@@ -117,6 +124,28 @@ lFlag() #this function will display the top10 longest trips by Route ID and then
     awk -v OFS=';' -F';' 'NR>1 { route_lengths_sum[$1]+= $2;} END {for (route_id in route_lengths_sum) {print route_id, route_lengths_sum[route_id];}}' |
     sort -t";" -k2nr |
     head -n10 > temp/temp_lflag.csv
+
+# Create histogram data file
+    awk -v OFS='; ' -F';' '{print $2, $1}' temp/temp_lflag.csv > temp/histogram_l_data.csv
+
+    # Generate horizontal histogram using gnuplot
+    gnuplot <<-EOF
+    set terminal png size 1500,600
+    set output 'images/histogram_l.png'
+    set title " Total Distance by route ID "
+    set ylabel "Total Distance(km)
+    set xlabel "Route ID"
+    set style data histograms
+    set style fill solid border -1
+    set yrange [0:3000]
+    set boxwidth 0.8
+    set ytic 600
+    plot 'temp/histogram_l_data.csv' using 1:xtic(2) notitle
+    
+    
+    
+EOF
+  
 }
 
 sFlag () #this function will create a .csv file with longest and shortest distance of a trip as well as its average for each trip (Route ID)  
