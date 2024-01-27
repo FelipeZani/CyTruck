@@ -13,7 +13,7 @@ This app provides you a set of tools to have an accurate data visualisation
 * Create a folder named "data" where you will insert your data file, in a .csv extension, inside your file
 * Open your terminal and insert sh main.sh data [option]
 ### Options
-* -help: open the help menu
+* -h: open the help menu
 * -d1: creates a horizontal histogram listing the top 10 drivers with greatest number of trips
 * -d2: creates a horizontal histogram listing the top 10 drivers with the greatest distance traveled
 * -l: create a histogram listing the top 10 longest trips
