@@ -40,7 +40,9 @@ taskDuration() #this function will receive an initial time passed by argument
 }
 
 
-
+#-d1 flag will display the top 10 drivers with the greatest number of trips "stepID"
+#the function will look for the the first of each trip stepID in the whole data file, 
+#and count the driver with the most stepIDs 
 d1Flag() {
     grep '^[^;]*;1;' data/data.csv |
     awk -v OFS=';' -F';' '{ journey_count[$6]++ } END {for (driver in journey_count) print driver, journey_count[driver] } ' | 
@@ -54,8 +56,8 @@ d1Flag() {
     gnuplot <<-EOF
 	set terminal png size 600,1500
 	set output 'images/histogram_d1.png'
-	set label "Top 10 Drivers with Highest Number of Trips" at -1.5,95 rotate by 90 #In this line we had to set the exact coordinate and rotate for the title to be in the right place
-	set ylabel "Number of Trips" offset 64
+	set label "Option -d1: Nb of routes = f(Driver)" at -1.5,95 rotate by 90 #In this line we had to set the exact coordinate and rotate for the title to be in the right place
+	set ylabel "Number of Routes" offset 64
 	set xlabel "Driver Names"
 	set style data histograms
 	set style fill solid border -1
@@ -89,7 +91,7 @@ d2Flag() # this function displays the 10 drivers with the longest rides
     gnuplot <<-EOF
         set terminal png size 600,1500
         set output 'images/histogram_d2.png'
-	set label "Top 10 Drivers with Longest Total Distance" at -1.5,58000 rotate by 90
+	    set label "Option -d2: Nb of routes = f(Driver)" at -1.5,58000 rotate by 90
         set ylabel "Total Distance (km)" offset 64
         set xlabel "Driver Names" 
         set style data histograms
@@ -116,9 +118,12 @@ tFlag()
 }
 
     
+#the function bellow will display the top10 longest trips by "Route ID" as well as their distance
+#First the system use awk to sum the total distance of each parcours "Route ID"
+#sort in order to have the values in the descending order and get the first 10 greatest values 
+#finally the histogram bars diagram is created using gnuplot
 
-
-lFlag() #this function will display the top10 longest trips by Route ID and then the distance
+lFlag() 
 {
     cut -d';' -f1,5 data/data.csv |
     awk -v OFS=';' -F';' 'NR>1 { route_lengths_sum[$1]+= $2;} END {for (route_id in route_lengths_sum) {print route_id, route_lengths_sum[route_id];}}' |
@@ -128,7 +133,7 @@ lFlag() #this function will display the top10 longest trips by Route ID and then
 # Create histogram data file
     awk -v OFS='; ' -F';' '{print $2, $1}' temp/temp_lflag.csv > temp/histogram_l_data.csv
 
-    # Generate horizontal histogram using gnuplot
+    # Set up the histogram configurations and plot the histogram
     gnuplot <<-EOF
     set terminal png size 1500,600
     set output 'images/histogram_l.png'
@@ -160,8 +165,24 @@ sFlag () #this function will create a .csv file with longest and shortest distan
     fi
 	./sflag #execute the program which will computate the max and min distances and the average
 	cd ../temp
-	sort -t";" -k5,5 -rn sflag_data.csv > sflag_data2graphic.csv
+	head -n 50 sflag_Sorted_data.csv > temp_sflag.csv
 }
+
+help()
+{ 
+echo "  -h                       displays the help menu"
+echo "  -d1                      displays a histogram of the top 10 drivers with the biggest number of trips"
+echo "  -d2                      displays a histogram of the top 10 drivers with the longest"
+echo "                                 distance in their trips"
+echo "  -l                       displays a histogram of the top 10 longest trips"
+echo "  -t                       displays a histogram of the top 10 most visited cities"
+echo "  -s                       displays an error bar diagram with the statistics about the distance's"
+echo "                                 varaition of each trip, it will be displayed the top 50 routes"
+echo "                                 with the greatest distance variation of each route"
+
+}
+
+
 
 
 
@@ -186,22 +207,25 @@ fi
 if [ ! -d images ]; 
 then
 	mkdir images
+else
+    find images -mindepth 1 -delete
 fi
 
+#management of arguments
 all_args=$*
 input_dir=$1
 
-checkDir $input_dir
+checkDir $input_dir #verify the existence of the data directory
 
 
-for i in $all_args #print the help list
+for i in $all_args #print the help list and launch the other flags
 do
 	case $i in
 
 	"-h") 
-    
-        echo "future: command list"
-
+	
+        help
+        
     	exit 0;;
 
       
@@ -211,7 +235,7 @@ do
     
     	d1Flag
 
-    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
     	exit 0;;
 
@@ -222,7 +246,7 @@ do
     
 		d2Flag
     
-    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
         exit 0;;
 
@@ -233,7 +257,7 @@ do
     
 		tFlag
     
-    	echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
         exit 0;;
 
@@ -244,7 +268,7 @@ do
 			
         lFlag
 			
-	    echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+	    echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
         exit 0;;
     "-s")
@@ -252,7 +276,7 @@ do
 
         sFlag
 
-        echo "Duration of the task's execution: `taskDuration $strt_time` seconds"
+        echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
         exit 0;;		
 
