@@ -218,6 +218,7 @@ input_dir=$1
 checkDir $input_dir #verify the existence of the data directory
 
 
+
 for i in $all_args #print the help list and launch the other flags
 do
 	case $i in
@@ -227,7 +228,14 @@ do
         help
         
     	exit 0;;
+    esac
+done
 
+
+
+for i in $all_args #print the help list and launch the other flags
+do
+	case $i in
       
 	"-d1")
 	

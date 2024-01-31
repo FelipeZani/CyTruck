@@ -1,5 +1,3 @@
-
-# CyTruck
 # CyTruck
 ## A functional app to manage the data of your truck company
 This app provides you a set of tools to have an accurate data visualisation
