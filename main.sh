@@ -108,13 +108,26 @@ EOF
 
 tFlag()
 {
+
     cut -d';' -f3,4 data/data.csv |
     awk -v OFS=';' -F ';' 'NR>1 {town_count[$1]++; town_count[$2]++; start_town_count[$1]++} END { for (town in town_count) print town, town_count[town], start_town_count[town];}' > temp/temp_tflag_1.csv
 
     cd progc
-    make -s compile 
-    ./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
+	
+	if [ ! -e tflag ]
+    then
+		$(make -s compile)
+		return_make=$?
+		if [ $return_make -ne 0 ]
+		then
+        	echo "Program failled to build an executable"
+			exit 1
+    	fi
+    fi
+	
+	./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
     
+	cd ..
 }
 
     
@@ -156,16 +169,21 @@ EOF
 sFlag () #this function will create a .csv file with longest and shortest distance of a trip as well as its average for each trip (Route ID)  
 {
 	cd progc
-	$(make buildSflag)
-	return_make=$?
-	if [ $return_make -ne 0 ]
+	if[ ! -e sflag]
 	then
-        echo "Program failled to build an executable"
-		exit 1
-    fi
+		$(make -s compile)
+		return_make=$?
+		if [ $return_make -ne 0 ]
+		then
+			echo "Program failled to build an executable"
+			exit 1
+		fi
+	fi
 	./sflag #execute the program which will computate the max and min distances and the average
 	cd ../temp
-	head -n 50 sflag_Sorted_data.csv > diagram_s_data.csv
+	head -n 50 sflag_Sorted_data.csv > diagram_s_data.csv #the file is already sorted it s just neded to get the first 50 Routes
+
+	cd ..
 }
 
 help()
@@ -211,9 +229,10 @@ else
     find images -mindepth 1 -delete
 fi
 
+
 #management of arguments
 
-all_args=$*
+all_args=$@
 input_dir=$1
 
 checkDir $input_dir #verify the existence of the data directory
@@ -227,8 +246,8 @@ do
 	"-h") 
 	
         help
-        
-    	exit 0;;
+    	
+		exit 0;;
     esac
 done
 
@@ -249,7 +268,7 @@ do
 				
 			echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 			
-			echo "\n"
+			echo ""
 			
 		;;
 			
@@ -265,12 +284,13 @@ do
 		
 			echo "-d2 flag completed"        
 		
-			echo "\n"
+			echo ""
 		;;
 
 
 	"-t") 
-		echo "-t flag in progress..."        
+		echo "-t flag in progress..."    
+
 		strt_time=$(getTime)
 
 		tFlag
@@ -279,7 +299,7 @@ do
 
 		echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 		
-		echo "\n"
+		echo ""
 	
 		;;	
 
@@ -295,7 +315,7 @@ do
 
 		echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
-		echo "\n"
+		echo ""
 
 		;;
 	
@@ -309,11 +329,16 @@ do
 	
     	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
-    	;;
+		echo ""
 
+    	;;
 	*)
 		echo "Invalid command: $i. Please use only the following flags: -d1, -d2, -t, -l, -s"
+		
 		exit 1
+		
+		echo ""
+
 		;;
 	esac
 done
