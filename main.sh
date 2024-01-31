@@ -1,22 +1,22 @@
 #!/bin/bash
 
 
-checkDir() #function which will verify if the directory indicated by the user exists
-{
 
-    if [ ! -d $1 ]; then
+checkFile() {
+    if [ ! -f "$1" ]; then
+        echo "Data file not found"
+        exit 1
+    fi
+}
+
+checkDir() {
+    if [ ! -d "$(dirname "$1")" ]; then
         echo "Data directory not found"
         exit 1
     fi
-	
+
     csv_file=$1
-    
-	if [ ! -f "$csv_file/data.csv" ]
-    then
-        echo "Data file not found"
-	exit 1
-    fi
-   
+    checkFile "$csv_file"
 }
 
 
@@ -58,7 +58,7 @@ d1Flag() {
 	set output 'images/histogram_d1.png'
 	set label "Option -d1: Nb of routes = f(Driver)" at -1.5,95 rotate by 90 #In this line we had to set the exact coordinate and rotate for the title to be in the right place
 	set ylabel "Number of Routes" offset 64
-	set xlabel "Driver Names"
+	set xlabel "Driver Names" rotate by 180
 	set style data histograms
 	set style fill solid border -1
 	set yrange [0:250]
@@ -93,7 +93,7 @@ d2Flag() # this function displays the 10 drivers with the longest rides
         set output 'images/histogram_d2.png'
 	    set label "Option -d2: Nb of routes = f(Driver)" at -1.5,58000 rotate by 90
         set ylabel "Total Distance (km)" offset 64
-        set xlabel "Driver Names" 
+        set xlabel "Driver Names" rotate by 180
         set style data histograms
         set style fill solid border -1
         set yrange [0:150000]
@@ -137,7 +137,7 @@ lFlag()
     gnuplot <<-EOF
     set terminal png size 1500,600
     set output 'images/histogram_l.png'
-    set title " Total Distance by route ID "
+    set title " Option -l: Distance = f(Route) "
     set ylabel "Total Distance(km)
     set xlabel "Route ID"
     set style data histograms
@@ -165,7 +165,7 @@ sFlag () #this function will create a .csv file with longest and shortest distan
     fi
 	./sflag #execute the program which will computate the max and min distances and the average
 	cd ../temp
-	head -n 50 sflag_Sorted_data.csv > temp_sflag.csv
+	head -n 50 temp_sflag_data.csv > diagram_s_data.csv
 }
 
 help()
