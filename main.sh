@@ -212,14 +212,15 @@ else
 fi
 
 #management of arguments
+
 all_args=$*
 input_dir=$1
 
 checkDir $input_dir #verify the existence of the data directory
 
+shift #removes the directory from the list of arguments
 
-
-for i in $all_args #print the help list and launch the other flags
+for i in $@ #verify if the help flag is in the list of arguments and print it
 do
 	case $i in
 
@@ -232,81 +233,87 @@ do
 done
 
 
-
-for i in $all_args #print the help list and launch the other flags
+for i in $@ #the following code will filter all the arguments in order to verify if all the flags in the argument list are valid
 do
 	case $i in
       
 	"-d1")
-	
-    	strt_time=$(getTime)
-	echo "-d1 flag in progress..."    
-    	
-    	d1Flag
-	
-	echo "-d1 completed"
-    	
-    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-	
-	echo "\n"
-	
-     	;;
-     	
+		
+			strt_time=$(getTime)
+			
+			echo "-d1 flag in progress..."    			
+			
+			d1Flag
+			
+			echo "-d1 completed"
+				
+			echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+			
+			echo "\n"
+			
+		;;
+			
 	"-d2") 
     
-    	strt_time=$(getTime)
-	
-	echo "-d2 flag in progress..."        
-	
-	d2Flag
-    
-    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-	
-	echo "-d2 flag completed"        
-	
-	echo "\n"
-        ;;
+			strt_time=$(getTime)
+		
+			echo "-d2 flag in progress..."        
+		
+			d2Flag
+		
+			echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+		
+			echo "-d2 flag completed"        
+		
+			echo "\n"
+		;;
 
 
 	"-t") 
-	echo "-t flag in progress..."        
-	strt_time=$(getTime)
+		echo "-t flag in progress..."        
+		strt_time=$(getTime)
 
-	tFlag
+		tFlag
 
-	echo "-t flag completed"        
+		echo "-t flag completed"        
 
-	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+		echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+		
+		echo "\n"
 	
-	echo "\n"
-	;;	
+		;;	
 
+	"-l")
 
-    	"-l")
+		strt_time=$(getTime)
+		
+		echo "-l flag in progress..."        
 
-	strt_time=$(getTime)
-	
-	echo "-l flag in progress..."        
+		lFlag
 
-	lFlag
+		echo "-l flag completed"        		
 
-	echo "-l flag completed"        		
+		echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
-	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+		echo "\n"
 
-	echo "\n"
-	;;
+		;;
 	
 	"-s")
     	strt_time=$(getTime)
     	echo "-s flag in progress..."        
         
-	sFlag
+		sFlag
 	
     	echo "-s flag completed"
 	
     	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
     	;;
-    esac
+
+	*)
+		echo "Invalid command: $i. Please use only the following flags: -d1, -d2, -t, -l, -s"
+		exit 1
+		;;
+	esac
 done
