@@ -124,7 +124,7 @@ tFlag()
 			exit 1
     	fi
     fi
-	
+	chmod +x tflag
 	./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
     
 	cd ..
@@ -169,7 +169,7 @@ EOF
 sFlag () #this function will create a .csv file with longest and shortest distance of a trip as well as its average for each trip (Route ID)  
 {
 	cd progc
-	if[ ! -e sflag]
+	if [ ! -e sflag ]
 	then
 		$(make -s compile)
 		return_make=$?
@@ -179,10 +179,10 @@ sFlag () #this function will create a .csv file with longest and shortest distan
 			exit 1
 		fi
 	fi
+	chmod +x sflag
 	./sflag #execute the program which will computate the max and min distances and the average
 	cd ../temp
 	head -n 50 sflag_Sorted_data.csv > diagram_s_data.csv #the file is already sorted it s just neded to get the first 50 Routes
-
 	cd ..
 }
 
