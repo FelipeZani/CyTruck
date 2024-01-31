@@ -240,54 +240,77 @@ do
 	"-d1")
 	
     	strt_time=$(getTime)
-    
+	echo "-d1 flag in progress..."    
+    	
     	d1Flag
-
+	
+	echo "-d1 completed"
+    	
     	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-
-    	exit 0;;
-
-     
+	
+	echo "\n"
+	
+     	;;
+     	
 	"-d2") 
     
     	strt_time=$(getTime)
-    
-		d2Flag
-    
-    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-
-        exit 0;;
-
-
-    "-t") 
-
-        strt_time=$(getTime)
-    
-		tFlag
+	
+	echo "-d2 flag in progress..."        
+	
+	d2Flag
     
     	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-
-        exit 0;;
-
-
-    "-l")
-
-        strt_time=$(getTime)
-			
-        lFlag
-			
-	    echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-
-        exit 0;;
-    "-s")
-        strt_time=$(getTime)
-
-        sFlag
-
-        echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
-
-        exit 0;;		
+	
+	echo "-d2 flag completed"        
+	
+	echo "\n"
+        ;;
 
 
+	"-t") 
+	echo "-t flag in progress..."        
+	strt_time=$(getTime)
+
+	tFlag
+
+	echo "-t flag completed"        
+
+	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+	
+	echo "\n"
+	;;	
+
+
+    	"-l")
+
+	strt_time=$(getTime)
+	
+	echo "-l flag in progress..."        
+
+	lFlag
+
+	echo "-l flag completed"        		
+
+	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+
+	echo "\n"
+	;;
+	
+	"-s")
+    	strt_time=$(getTime)
+    	echo "-s flag in progress..."        
+        
+	sFlag
+	
+    	echo "-s flag completed"
+	
+    	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
+
+    	;;		
+
+	*)
+	echo "flag not found, please try again"
+	exit 1
     esac
 done
