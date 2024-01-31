@@ -307,10 +307,6 @@ do
 	
     	echo "Duration of the task's execution: $(taskDuration $strt_time) seconds"
 
-    	;;		
-
-	*)
-	echo "flag not found, please try again"
-	exit 1
+    	;;
     esac
 done
