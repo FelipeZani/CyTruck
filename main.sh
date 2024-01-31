@@ -165,7 +165,7 @@ sFlag () #this function will create a .csv file with longest and shortest distan
     fi
 	./sflag #execute the program which will computate the max and min distances and the average
 	cd ../temp
-	head -n 50 temp_sflag_data.csv > diagram_s_data.csv
+	head -n 50 sflag_Sorted_data.csv > diagram_s_data.csv
 }
 
 help()
