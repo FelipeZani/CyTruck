@@ -128,6 +128,29 @@ tFlag()
 	./tflag ../temp/temp_tflag_1.csv ../temp/temp_tflag_2.csv
     
 	cd ..
+	
+gnuplot <<-EOF
+    reset
+    set terminal pngcairo size 1500,600
+    set output 'images/histogram_t.png'
+    set datafile separator ';'
+    set style data histogram
+set style histogram cluster gap 1
+
+set style fill solid border rgb "black"
+set auto x
+    set title "Option -t : Number of Trips = f(Town)" 
+    set yrange [ 0 : * ] 
+    set xtics nomirror  rotate by -45  font ",9"
+    set ytics font ",9"
+    set ylabel "Number of Trips" font ",10"
+    set xlabel "TOWN" font ",10" 
+
+    plot 'temp/temp_tflag_2.csv' using 2:xtic(1) title 'Total Trips' lc rgb "#adb5ff" lt 1, \
+         '' using 3:xtic(1) title 'Trips as Departure Town' lc rgb "#5e7f5e" lt 1
+EOF
+
+
 }
 
     
@@ -198,7 +221,7 @@ gnuplot <<- EOF
     set xlabel "ROUTE ID" font ",10" 
 
     plot 'temp/diagram_s_data.csv' using 0:2:3 with filledcurves fc rgb "#adb5ff" title 'Distance Max/Min (Km)', \
-         "" using 4:xticlabels(1) smooth mcspline lw 2 title 'Distance average (Km)'
+         "" using 4:xticlabels(1) smooth mcspline lw 2 title 'Average distance (Km)'
 EOF
 
 }
