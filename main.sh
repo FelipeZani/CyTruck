@@ -184,6 +184,23 @@ sFlag () #this function will create a .csv file with longest and shortest distan
 	cd ../temp
 	head -n 50 sflag_Sorted_data.csv > diagram_s_data.csv #the file is already sorted it s just neded to get the first 50 Routes
 	cd ..
+	
+gnuplot <<- EOF
+    reset
+    set terminal pngcairo size 1500,600
+    set output 'images/histogram_s.png'
+    set datafile separator ';'
+    set title "Option -s : Distance = f(Route)" 
+    set yrange [ 0 : * ] 
+    set xtics nomirror  rotate by -45  font ",9"
+    set ytics font ",9"
+    set ylabel "DISTANCE (Km)" font ",10"
+    set xlabel "ROUTE ID" font ",10" 
+
+    plot 'temp/diagram_s_data.csv' using 0:2:3 with filledcurves fc rgb "#adb5ff" title 'Distance Max/Min (Km)', \
+         "" using 4:xticlabels(1) smooth mcspline lw 2 title 'Distance average (Km)'
+EOF
+
 }
 
 help()
