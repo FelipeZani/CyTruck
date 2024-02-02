@@ -18,3 +18,5 @@ This app provides you a set of tools to have an accurate data visualisation
 * -l: create a histogram listing the top 10 longest trips
 * -t: create a histogram listing the top 10 most visited cities
 * -s: create an error bar diagram listing the top 50 routes with greatest variation of distance dS
+### Diagrams
+* Diagrams are stocked in images folder
