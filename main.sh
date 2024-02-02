@@ -164,7 +164,7 @@ lFlag()
     cut -d';' -f1,5 data/data.csv |
     awk -v OFS=';' -F';' 'NR>1 { route_lengths_sum[$1]+= $2;} END {for (route_id in route_lengths_sum) {print route_id, route_lengths_sum[route_id];}}' |
     sort -t";" -k2nr |
-    head -n10 > temp/temp_lflag.csv
+    head -n10  | sort -t";" -k1n > temp/temp_lflag.csv
 
 # Create histogram data file
     awk -v OFS='; ' -F';' '{print $2, $1}' temp/temp_lflag.csv > temp/histogram_l_data.csv
@@ -248,8 +248,8 @@ echo "                                 with the greatest distance variation of e
 
 # Main
 
-if [ $# -eq 0 ]; then #check if any parameter was passed
-    echo "No arguments provided"
+if [ $# -lt 2 ]; then #check if any parameter was passed
+    echo "No arguments or not enough arguments provided"
     exit 1
 fi
 
@@ -273,7 +273,9 @@ fi
 #management of arguments
 
 all_args=$@
-input_dir=$1
+
+input_dir=$(realpath $1) #gets the real path to the data file
+cd $(realpath "$(dirname "$0")")
 
 checkDir $input_dir #verify the existence of the data directory
 
